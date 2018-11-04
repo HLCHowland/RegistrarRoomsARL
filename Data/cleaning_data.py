@@ -50,7 +50,7 @@ def writeToExcel(df, filename):
 
 if __name__=='__main__':
     path = 'originals (uncleaned)'
-    for filename in ['2015-FA.csv', '2015-SP.csv', '2016-FA.csv', '2016-SP.csv', '2017-FA.csv', '2017-SP.csv', '2018-FA.csv', '2018-SP.csv']:
+    for filename in ['FA2014.csv', 'SP2015.csv', 'FA2015.csv', 'SP2016.csv', 'FA2016.csv', 'SP2017.csv', 'FA2017.csv', 'SP2018.csv', 'FA2018.csv']:
         # Read in data
         data = pd.read_csv(os.path.join(path, filename))
         # Clean
