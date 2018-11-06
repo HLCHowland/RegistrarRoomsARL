@@ -7,7 +7,6 @@ import random
 import pandas as pd
 from apyori import apriori
 
-# addressSegment = "X:\Python\Projects\eForest_Scheduling_Github\Data\originals (uncleaned)\\"
 addressSegment = "Data\originals (uncleaned)\\"
 dfs = [pd.read_csv(addressSegment+"FA2014.csv"), #Datasets to be included in 'dfs' list for
         pd.read_csv(addressSegment+"FA2015.csv"),#processing. All of these datasets will be
@@ -19,13 +18,21 @@ dfs = [pd.read_csv(addressSegment+"FA2014.csv"), #Datasets to be included in 'df
         pd.read_csv(addressSegment+"FA2018.csv"),
         pd.read_csv(addressSegment+"SP2018.csv")]
 
-def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets.
-        df = df.drop(["Title & Requirements Met", "Current", "Avail", "Waitlist", "Other Attributes"], axis=1)
-        df = df[df.Course != 'Course']                                             #The code in this method takes out any
-        df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z]?[0-9]+)(?! - Final Exam)')  #extraneous columns, rows and data from
-        df = df.dropna(subset=['Room'])                                            #the dataframe. It also reformats info
-        return df                                                                  #using regular expressions.
-
+def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets. #The code in this method
+        df.reset_index(drop=True, inplace=True)#takes out any extraneous columns, rows and data from the dataframe. It
+        df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z0-9]+)')#also reformats info#using regular expressions.
+        df['Dept'] = df.Course.str.extract(r'([A-Z]+)')
+        df = df[['Dept'] + df.columns.tolist()[:-1]]
+        df.Course = df.Course.str.extract(r'(?:[A-Z]+)([A-Z0-9 ]+)')
+        df = df.apply(lambda val: val.str.strip())
+        df['Title & Requirements Met'] = df['Title & Requirements Met'].str.extract(r'([^\n]+)')
+        df['Meeting Times'] = df['Meeting Times'].str.extract(
+                r'(\d\d?:\d\d? +[AP]M +- +\d\d?:\d\d? +[AP]M +[MTWRF]+)')
+        df = df.rename({'Title & Requirements Met': 'Title'})
+        df = df[df.Course != 'Course']
+        df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z]?[0-9]+)(?! - Final Exam)')
+        # df = df.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
+        return df
 def SupportFinder(df, ColumnTarget, SupportMethod): #This method generates a number for the support attribute of the
         output = []                                 #apriori algorithm.
         if SupportMethod == 'All':
@@ -71,9 +78,12 @@ def compounded_data_frames(dflist, howmany): #This method concatenates dataframe
                                  randomdf = randomdfindexes[i]
                                  MiningSet = pd.concat([dflist[randomdf], MiningSet], 0, ignore_index=True)
         return MiningSet
+MiningSet = (compounded_data_frames(dfs, 8))
+MiningSet = cleaner(MiningSet)
 
-association_results = []
-for i in range (150):
+
+association_results = [120]
+for i in range (12):
     MiningSet = (compounded_data_frames(dfs, 8))
     MiningSet = cleaner(MiningSet)
     support = SupportFinder(MiningSet, 'Room', 'Lower IQR')
@@ -94,3 +104,4 @@ print(association_results['Rules'].value_counts())
 krk = association_results['Rules'].value_counts()
 print(krk.shape)
 
+#MiningSet.to_clipboard(sep=',')

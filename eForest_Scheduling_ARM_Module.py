@@ -19,11 +19,24 @@ dfs = [pd.read_csv(addressSegment+"FA2014.csv"), #Datasets to be included in 'df
         pd.read_csv(addressSegment+"SP2018.csv")]
 
 def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets.
-        df = df.drop(["Title & Requirements Met", "Current", "Avail", "Waitlist", "Other Attributes"], axis=1)
-        df = df[df.Course != 'Course']                                             #The code in this method takes out any
-        df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z]?[0-9]+)(?! - Final Exam)')  #extraneous columns, rows and data from
-        df = df.dropna(subset=['Room'])                                            #the dataframe. It also reformats info
-        return df                                                                  #using regular expressions.
+                df = df.loc[df.Course != 'Course']
+                df.reset_index(drop=True, inplace=True)
+                df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z0-9]+)')
+                df['Dept'] = df.Course.str.extract(r'([A-Z]+)')
+                df = df[['Dept'] + df.columns.tolist()[:-1]]
+                df.Course = df.Course.str.extract(r'(?:[A-Z]+)([A-Z0-9 ]+)')
+                df = df.apply(lambda val: val.str.strip())
+                df['Title & Requirements Met'] = df['Title & Requirements Met'].str.extract(r'([^\n]+)')
+                df['Meeting Times'] = df['Meeting Times'].str.extract(
+                        r'(\d\d?:\d\d? +[AP]M +- +\d\d?:\d\d? +[AP]M +[MTWRF]+)')
+                df = df.rename({'Title & Requirements Met': 'Title'})
+                df = df.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1,
+                             inplace=True)
+                df = df[df.Course != 'Course']  # The code in this method takes out any
+                df.Room = df.Room.str.extract(
+                        r'([A-Z]+ +[A-Z]?[0-9]+)(?! - Final Exam)')  # extraneous columns, rows and data from
+                df = df.dropna(subset=['Room'], inplace=True)  # the dataframe. It also reformats info
+                return df  # using regular expressions.
 
 def SupportFinder(df, ColumnTarget, SupportMethod): #This method generates a number for the support attribute of the
         output = []                                 #apriori algorithm.
@@ -70,6 +83,11 @@ def compounded_data_frames(dflist, howmany): #This method concatenates dataframe
                                  randomdf = randomdfindexes[i]
                                  MiningSet = pd.concat([dflist[randomdf], MiningSet], 0, ignore_index=True)
         return MiningSet
+
+
+
+
+
 
 cdfFunctiondfSize = int(input("How many dataframes from the list of dataframes would you like to use? Please enter a number less"
                           " than the length of the list of dataframes.\n"))
