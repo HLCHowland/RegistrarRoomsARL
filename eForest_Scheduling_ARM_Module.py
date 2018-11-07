@@ -6,17 +6,20 @@
 import random
 import pandas as pd
 from apyori import apriori
+from Data import data_cleaning
 
-addressSegment = "X:\Python\Projects\eForest_Scheduling_Github\Data\originals (uncleaned)\\"
-dfs = [pd.read_csv(addressSegment+"FA2014.csv"), #Datasets to be included in 'dfs' list for
-        pd.read_csv(addressSegment+"FA2015.csv"),#processing. All of these datasets will be
-        pd.read_csv(addressSegment+"SP2015.csv"),#a part of a list.
-        pd.read_csv(addressSegment+"FA2016.csv"),
-        pd.read_csv(addressSegment+"SP2016.csv"),
-        pd.read_csv(addressSegment+"FA2017.csv"),
-        pd.read_csv(addressSegment+"SP2017.csv"),
-        pd.read_csv(addressSegment+"FA2018.csv"),
-        pd.read_csv(addressSegment+"SP2018.csv")]
+addressSegment = os.path.join('Data', 'originals (uncleaned)')
+dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')), #Datasets to be included in 'dfs' list for
+   pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),#processing. All of these datasets will be
+   pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),#a part of a list.
+   pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
+   pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
+   pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
+   pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
+   pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
+   pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))
+  ]
+
 
 def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets.
                 df = df.loc[df.Course != 'Course']
