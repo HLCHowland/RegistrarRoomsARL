@@ -7,11 +7,15 @@ import random, os
 import pandas as pd
 from apyori import apriori
 from Data import data_cleaning
+import arl_utils
+
+TEXT_TO_SAVE = ''
+MESSAGE = ''
 
 addressSegment = os.path.join('Data', 'originals (uncleaned)')
-dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')), #Datasets to be included in 'dfs' list for
-       pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),#processing. All of these datasets will be
-       pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),#a part of a list.
+dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),   # Datasets to be included in 'dfs' list for
+       pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),   # processing. All of these datasets will be
+       pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),   # a part of a list.
        pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
        pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
        pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
@@ -99,12 +103,22 @@ for i in range (12):
     association_results.append(list(association_rules))
 
 
-print(association_results)
+#print(association_results)
+TEXT_TO_SAVE += association_results + '\n'
 association_results = pd.DataFrame({'Rules':association_results})
 
-print(association_results['Rules'].value_counts())
+#print(association_results['Rules'].value_counts())
+TEXT_TO_SAVE += association_results['Rules'].value_counts() + '\n'
 
 krk = association_results['Rules'].value_counts()
-print(krk.shape)
+#print(krk.shape)
+TEXT_TO_SAVE += krk.shape + '\n'
 
 #MiningSet.to_clipboard(sep=',')
+
+# ##########################################
+# ADD YOUR CUSTOM SAVE-TO-FILE MESSAGE HERE:
+# ##########################################
+MESSAGE += ''
+
+arl_utils.save(TEXT_TO_SAVE, message = MESSAGE)
