@@ -104,15 +104,15 @@ for i in range (12):
 
 
 #print(association_results)
-TEXT_TO_SAVE += association_results + '\n'
+TEXT_TO_SAVE += str(association_results) + '\n'
 association_results = pd.DataFrame({'Rules':association_results})
 
 #print(association_results['Rules'].value_counts())
-TEXT_TO_SAVE += association_results['Rules'].value_counts() + '\n'
+TEXT_TO_SAVE += str(association_results['Rules'].value_counts()) + '\n'
 
 krk = association_results['Rules'].value_counts()
 #print(krk.shape)
-TEXT_TO_SAVE += krk.shape + '\n'
+TEXT_TO_SAVE += str(krk.shape) + '\n'
 
 #MiningSet.to_clipboard(sep=',')
 

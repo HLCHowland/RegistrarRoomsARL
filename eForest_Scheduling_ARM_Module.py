@@ -3,7 +3,7 @@
 #This moduleof the eForest Scheduling project takes data sets from previous semesters and seeks to mine rules from them
 #that can be used to help generate semesterly class schedules.
 
-import random
+import random, os
 import pandas as pd
 from apyori import apriori
 from Data import data_cleaning
@@ -116,7 +116,7 @@ association_rules = apriori(records, min_support=support[0], min_confidence=0.2,
 association_results = list(association_rules)
 
 #print(association_results)
-TEXT_TO_SAVE += association_results
+TEXT_TO_SAVE += str(association_results)
 
 # ##########################################
 # ADD YOUR CUSTOM SAVE-TO-FILE MESSAGE HERE:
