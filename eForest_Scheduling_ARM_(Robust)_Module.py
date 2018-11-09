@@ -6,10 +6,10 @@
 import random, os
 import pandas as pd
 from apyori import apriori
-from Data import data_cleaning
+import time
 
 addressSegment = os.path.join('Data', 'originals (uncleaned)')
-dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')), #Datasets to be included in 'dfs' list for
+dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),#Datasets to be included in 'dfs' list for
        pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),#processing. All of these datasets will be
        pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),#a part of a list.
        pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
@@ -81,30 +81,34 @@ def compounded_data_frames(dflist, howmany): #This method concatenates dataframe
                                  randomdf = randomdfindexes[i]
                                  MiningSet = pd.concat([dflist[randomdf], MiningSet], 0, ignore_index=True)
         return MiningSet
+
+def apyori_robust_rule_finder (df, robustness, supportColumnTarget, supportMethod ):
+    association_results = []
+    for i in range(robustness):
+        df = (compounded_data_frames(dfs, 8))
+        df = cleaner(df)
+        support = SupportFinder(df, supportColumnTarget, supportMethod)
+        records = []
+        for i in range(0, len(df)):
+            records.append([str(df.values[i, j]) for j in range(0, len(df.values[i]))])
+        association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
+        association_results.append(list(association_rules))
+    return association_results
+
+
+
+
 MiningSet = (compounded_data_frames(dfs, 8))
 MiningSet = cleaner(MiningSet)
+startTime = time.clock()
+runTime = time.clock() - startTime
+rules = apyori_robust_rule_finder(MiningSet, 6, 'Room', 'Lower IQR')
+rules = pd.DataFrame({'Rules': rules})
+print(rules)
+rules.to_clipboard(sep=',')
 
 
-association_results = [120]
-for i in range (12):
-    MiningSet = (compounded_data_frames(dfs, 8))
-    MiningSet = cleaner(MiningSet)
-    support = SupportFinder(MiningSet, 'Room', 'Lower IQR')
-
-    records = []
-    for i in range(0, len(MiningSet)):
-        records.append([str(MiningSet.values[i, j]) for j in range(0, len(MiningSet.values[i]))])
-
-    association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
-    association_results.append(list(association_rules))
-
-
-print(association_results)
-association_results = pd.DataFrame({'Rules':association_results})
-
-print(association_results['Rules'].value_counts())
-
-krk = association_results['Rules'].value_counts()
+krk = rules['Rules'].value_counts()
 print(krk.shape)
-
-#MiningSet.to_clipboard(sep=',')
+#
+#rules.to_clipboard(sep=',')
