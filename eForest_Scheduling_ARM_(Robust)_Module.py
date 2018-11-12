@@ -113,4 +113,4 @@ TEXT_TO_SAVE += str(vc)
 # ##########################################
 MESSAGE += 'Running (Robust) with value counts'
 
-arl_utils.save(TEXT_TO_SAVE, message = MESSAGE)
+arl_utils.save(TEXT_TO_SAVE, MESSAGE)
