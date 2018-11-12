@@ -29,7 +29,7 @@ def clean(data):
     data['Meeting Times'] = data['Meeting Times'].str.extract(r'(\d\d?:\d\d? +[AP]M +- +\d\d?:\d\d? +[AP]M +[MTWRF]+)')
     # ...'Title & Requirements Met' (retain only the title):
     data['Title & Requirements Met'] = data['Title & Requirements Met'].str.extract(r'([^\n]+)')
-    data.rename({'Title & Requirements Met':'Title'})
+    data.rename({'Title & Requirements Met':'Title'}, axis=1, inplace=True)
     # 4: Drop irrelevant columns
     data.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
     # 5: Strip whitespace for better one-hot encoding

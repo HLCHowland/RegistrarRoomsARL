@@ -17,8 +17,7 @@ dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),#Datasets to be i
        pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
        pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
        pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
-       pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))
-      ]
+       pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))]
 
 def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets. #The code in this method
         df.reset_index(drop=True, inplace=True)#takes out any extraneous columns, rows and data from the dataframe. It
@@ -106,8 +105,6 @@ rules = apyori_robust_rule_finder(MiningSet, 6, 'Room', 'Lower IQR')
 rules = pd.DataFrame({'Rules': rules})
 print(rules)
 rules.to_clipboard(sep=',')
-
-
 krk = rules['Rules'].value_counts()
 print(krk.shape)
 #

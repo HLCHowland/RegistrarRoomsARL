@@ -3,20 +3,27 @@
 #This moduleof the eForest Scheduling project takes data sets from previous semesters and seeks to mine rules from them
 #that can be used to help generate semesterly class schedules.
 
-import random
+import random, os
 import pandas as pd
 from apyori import apriori
+from Data import data_cleaning
+import arl_utils
 
-addressSegment = "X:\Python\Projects\eForest_Scheduling_Github\Data\originals (uncleaned)\\"
-dfs = [pd.read_csv(addressSegment+"FA2014.csv"), #Datasets to be included in 'dfs' list for
-        pd.read_csv(addressSegment+"FA2015.csv"),#processing. All of these datasets will be
-        pd.read_csv(addressSegment+"SP2015.csv"),#a part of a list.
-        pd.read_csv(addressSegment+"FA2016.csv"),
-        pd.read_csv(addressSegment+"SP2016.csv"),
-        pd.read_csv(addressSegment+"FA2017.csv"),
-        pd.read_csv(addressSegment+"SP2017.csv"),
-        pd.read_csv(addressSegment+"FA2018.csv"),
-        pd.read_csv(addressSegment+"SP2018.csv")]
+TEXT_TO_SAVE = ''
+MESSAGE = ''
+
+addressSegment = os.path.join('Data', 'originals (uncleaned)')
+dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),   # Datasets to be included in 'dfs' list for
+       pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),   # processing. All of these datasets will be
+       pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),   # a part of a list.
+       pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
+       pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
+       pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
+       pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
+       pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
+       pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))
+      ]
+
 
 def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets.
                 df = df.loc[df.Course != 'Course']
@@ -107,9 +114,13 @@ for i in range(0, len(MiningSet)):
 
 association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
 association_results = list(association_rules)
-print(association_results)
 
+#print(association_results)
+TEXT_TO_SAVE += str(association_results)
 
+# ##########################################
+# ADD YOUR CUSTOM SAVE-TO-FILE MESSAGE HERE:
+# ##########################################
+MESSAGE += ''
 
-
-
+arl_utils.save(TEXT_TO_SAVE, message = MESSAGE)
