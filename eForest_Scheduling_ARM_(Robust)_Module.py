@@ -91,21 +91,22 @@ def apyori_robust_rule_finder (df, robustness, supportColumnTarget, supportMetho
         for i in range(0, len(df)):
             records.append([str(df.values[i, j]) for j in range(0, len(df.values[i]))])
         association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
-        association_results.append(list(association_rules))
+        # association_results.append(list(association_rules))
+        association_results.extend(list(association_rules))
+
     return association_results
 
 
 
 
-MiningSet = (compounded_data_frames(dfs, 8))
+MiningSet = (compounded_data_frames(dfs, 6))
 MiningSet = cleaner(MiningSet)
-startTime = time.clock()
-runTime = time.clock() - startTime
-rules = apyori_robust_rule_finder(MiningSet, 6, 'Room', 'Lower IQR')
+
+
+rules = apyori_robust_rule_finder(MiningSet, 12, 'Room', 'Lower IQR')
+
 rules = pd.DataFrame({'Rules': rules})
-print(rules)
-rules.to_clipboard(sep=',')
-krk = rules['Rules'].value_counts()
-print(krk.shape)
-#
-#rules.to_clipboard(sep=',')
+vc = rules['Rules'].value_counts()
+print(type(vc))
+print(vc)
+
