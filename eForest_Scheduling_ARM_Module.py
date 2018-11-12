@@ -37,12 +37,12 @@ def cleaner(df): #The data cleaner is specialized to clean data only from the ab
                 df['Meeting Times'] = df['Meeting Times'].str.extract(
                         r'(\d\d?:\d\d? +[AP]M +- +\d\d?:\d\d? +[AP]M +[MTWRF]+)')
                 df = df.rename({'Title & Requirements Met': 'Title'})
-                df = df.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1,
+                df.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1,
                              inplace=True)
                 df = df[df.Course != 'Course']  # The code in this method takes out any
                 df.Room = df.Room.str.extract(
                         r'([A-Z]+ +[A-Z]?[0-9]+)(?! - Final Exam)')  # extraneous columns, rows and data from
-                df = df.dropna(subset=['Room'], inplace=True)  # the dataframe. It also reformats info
+                df.dropna(subset=['Room'], inplace=True)  # the dataframe. It also reformats info
                 return df  # using regular expressions.
 
 def SupportFinder(df, ColumnTarget, SupportMethod): #This method generates a number for the support attribute of the

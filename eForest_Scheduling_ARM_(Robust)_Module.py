@@ -85,6 +85,8 @@ def compounded_data_frames(dflist, howmany): #This method concatenates dataframe
                                  randomdf = randomdfindexes[i]
                                  MiningSet = pd.concat([dflist[randomdf], MiningSet], 0, ignore_index=True)
         return MiningSet
+
+
 MiningSet = (compounded_data_frames(dfs, 8))
 MiningSet = cleaner(MiningSet)
 
@@ -104,7 +106,8 @@ for i in range (12):
 
 
 #print(association_results)
-TEXT_TO_SAVE += str(association_results) + '\n'
+TEXT_TO_SAVE += '\n'.join([str(elem) for elem in association_results]) + '\n'
+
 association_results = pd.DataFrame({'Rules':association_results})
 
 #print(association_results['Rules'].value_counts())
@@ -119,6 +122,6 @@ TEXT_TO_SAVE += str(krk.shape) + '\n'
 # ##########################################
 # ADD YOUR CUSTOM SAVE-TO-FILE MESSAGE HERE:
 # ##########################################
-MESSAGE += ''
+MESSAGE += 'Running (Robust), outputting lists cleanly'
 
 arl_utils.save(TEXT_TO_SAVE, message = MESSAGE)
