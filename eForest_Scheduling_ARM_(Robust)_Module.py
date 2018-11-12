@@ -6,23 +6,21 @@
 import random, os
 import pandas as pd
 from apyori import apriori
-from Data import data_cleaning
 import arl_utils
 
 TEXT_TO_SAVE = ''
 MESSAGE = ''
 
 addressSegment = os.path.join('Data', 'originals (uncleaned)')
-dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),   # Datasets to be included in 'dfs' list for
-       pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),   # processing. All of these datasets will be
-       pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),   # a part of a list.
+dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),#Datasets to be included in 'dfs' list for
+       pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),#processing. All of these datasets will be
+       pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),#a part of a list.
        pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
        pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
        pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
        pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
        pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
-       pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))
-      ]
+       pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))]
 
 def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets. #The code in this method
         df.reset_index(drop=True, inplace=True)#takes out any extraneous columns, rows and data from the dataframe. It
@@ -86,42 +84,33 @@ def compounded_data_frames(dflist, howmany): #This method concatenates dataframe
                                  MiningSet = pd.concat([dflist[randomdf], MiningSet], 0, ignore_index=True)
         return MiningSet
 
+def apyori_robust_rule_finder (dflist, howmany, robustness, supportColumnTarget, supportMethod ):
+    association_results = []
+    for i in range(robustness): #The robustness here dictates how many times the rule mining process will happen.
+        df = (compounded_data_frames(dflist, howmany)) #This function is what appends the dataframes into a larger one that
+        df = cleaner(df)                            # is more suitable for rule mining.
+        support = SupportFinder(df, supportColumnTarget, supportMethod) #This gets the support value for the pipeline.
+        records = [] #The 'df' is the set being prepared and cleaned, derived from 'dflist' passed in at the call.
+        for i in range(0, len(df)): #This line and the line below set up a dataframe that can be mined for rules.
+            records.append([str(df.values[i, j]) for j in range(0, len(df.values[i]))])
+        association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
+        association_results.extend(list(association_rules)) #The values above define how easy it is for an association
+    return association_results                              #aka a rule to be made.
 
-MiningSet = (compounded_data_frames(dfs, 8))
-MiningSet = cleaner(MiningSet)
+rules = apyori_robust_rule_finder(dfs, 8, 12, 'Room', 'Lower IQR')
 
+#TEXT_TO_SAVE += '\n'.join([str(elem) for elem in association_results]) + '\n'
 
-association_results = [120]
-for i in range (12):
-    MiningSet = (compounded_data_frames(dfs, 8))
-    MiningSet = cleaner(MiningSet)
-    support = SupportFinder(MiningSet, 'Room', 'Lower IQR')
+rules = pd.DataFrame({'Rules': rules})
+vc = rules['Rules'].value_counts()
+print(type(vc))
+print(vc)
 
-    records = []
-    for i in range(0, len(MiningSet)):
-        records.append([str(MiningSet.values[i, j]) for j in range(0, len(MiningSet.values[i]))])
-
-    association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
-    association_results.append(list(association_rules))
-
-
-#print(association_results)
-TEXT_TO_SAVE += '\n'.join([str(elem) for elem in association_results]) + '\n'
-
-association_results = pd.DataFrame({'Rules':association_results})
-
-#print(association_results['Rules'].value_counts())
-TEXT_TO_SAVE += str(association_results['Rules'].value_counts()) + '\n'
-
-krk = association_results['Rules'].value_counts()
-#print(krk.shape)
-TEXT_TO_SAVE += str(krk.shape) + '\n'
-
-#MiningSet.to_clipboard(sep=',')
+TEXT_TO_SAVE += str(vc)
 
 # ##########################################
 # ADD YOUR CUSTOM SAVE-TO-FILE MESSAGE HERE:
 # ##########################################
-MESSAGE += 'Running (Robust), outputting lists cleanly'
+MESSAGE += 'Running (Robust) with value counts'
 
 arl_utils.save(TEXT_TO_SAVE, message = MESSAGE)
