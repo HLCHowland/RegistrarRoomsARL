@@ -6,7 +6,6 @@
 import random, os
 import pandas as pd
 from apyori import apriori
-import time
 
 addressSegment = os.path.join('Data', 'originals (uncleaned)')
 dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),#Datasets to be included in 'dfs' list for
@@ -81,29 +80,20 @@ def compounded_data_frames(dflist, howmany): #This method concatenates dataframe
                                  MiningSet = pd.concat([dflist[randomdf], MiningSet], 0, ignore_index=True)
         return MiningSet
 
-def apyori_robust_rule_finder (df, robustness, supportColumnTarget, supportMethod ):
+def apyori_robust_rule_finder (dflist, howmany, robustness, supportColumnTarget, supportMethod ):
     association_results = []
-    for i in range(robustness):
-        df = (compounded_data_frames(dfs, 8))
-        df = cleaner(df)
-        support = SupportFinder(df, supportColumnTarget, supportMethod)
-        records = []
-        for i in range(0, len(df)):
+    for i in range(robustness): #The robustness here dictates how many times the rule mining process will happen.
+        df = (compounded_data_frames(dflist, howmany)) #This function is what appends the dataframes into a larger one that
+        df = cleaner(df)                            # is more suitable for rule mining.
+        support = SupportFinder(df, supportColumnTarget, supportMethod) #This gets the support value for the pipeline.
+        records = [] #The 'df' is the set being prepared and cleaned, derived from 'dflist' passed in at the call.
+        for i in range(0, len(df)): #This line and the line below set up a dataframe that can be mined for rules.
             records.append([str(df.values[i, j]) for j in range(0, len(df.values[i]))])
         association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
-        # association_results.append(list(association_rules))
-        association_results.extend(list(association_rules))
+        association_results.extend(list(association_rules)) #The values above define how easy it is for an association
+    return association_results                              #aka a rule to be made.
 
-    return association_results
-
-
-
-
-MiningSet = (compounded_data_frames(dfs, 6))
-MiningSet = cleaner(MiningSet)
-
-
-rules = apyori_robust_rule_finder(MiningSet, 12, 'Room', 'Lower IQR')
+rules = apyori_robust_rule_finder(dfs, 8, 12, 'Room', 'Lower IQR')
 
 rules = pd.DataFrame({'Rules': rules})
 vc = rules['Rules'].value_counts()
