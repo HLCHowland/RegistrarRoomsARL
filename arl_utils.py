@@ -9,7 +9,7 @@ def save(text_to_save, message=''):
 		print('Encountered FileNotFoundError, attempting to create index file...')
 		if not os.path.exists('Runs'):
 			os.mkdir('Runs')
-		open(os.path.join('Runs', 'index'), 'w').write('0')
+		open(os.path.join('Runs', 'index'), 'w').write('0\n')
 		index = 1
 		print('... Success')
 	# Update index cache
