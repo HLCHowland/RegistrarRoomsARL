@@ -124,18 +124,26 @@ if __name__ == '__main__':
 
     # Run the pipeline and store list of rules
     rules = apyori_robust_rule_finder(dfs, 8, 12, 'Room', 'Lower IQR')
-    
-    print(len(rules))
+#    
+#    print(len(rules))
 
     # Filter rules to retain only those having a Room as the consequent
     # IMPORTANT: Using the 'all_rooms_list_maybe.xlsx' file in Data/ folder as the
     #            makeshift list of all rooms. 
     #            Check with Hill/Registrar for official list of all available rooms.
     allRooms = pd.read_excel(os.path.join('Data', 'all_rooms_list_maybe.xlsx')).iloc[:,0].values
-    
+    filteredRules = []
+    for relationRecord in rules:
+        for orderedStats in relationRecord[2]:
+            if list(orderedStats[1])[0] in allRooms:
+                filteredRules.append(relationRecord[0:2] + orderedStats[:])
+    filteredRulesDf = pd.DataFrame(filteredRules, columns=['Itemset', 'Itemset Support', 'Rule Antecedent', 'Rule Consequent', 'Rule Confidence', 'Rule Lift'])
+    writer = pd.ExcelWriter('filteredRules.xlsx')
+    filteredRulesDf.to_excel(writer)
+    writer.save()
 
-    rules = pd.DataFrame({'Rules': rules})
-    vc = rules['Rules'].value_counts()
+#    rules = pd.DataFrame({'Rules': rules})
+#    vc = rules['Rules'].value_counts()
 #    print(type(vc))
 #    print(vc)
 
@@ -149,4 +157,4 @@ if __name__ == '__main__':
 #    MESSAGE = 'Running (Robust) with value counts (refactored, using external clean func)'
     MESSAGE = 'List of Rooms?'
 
-    arl_utils.save(TEXT_TO_SAVE, MESSAGE)
+#    arl_utils.save(TEXT_TO_SAVE, MESSAGE)
