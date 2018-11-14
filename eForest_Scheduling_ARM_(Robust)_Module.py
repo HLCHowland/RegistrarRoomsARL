@@ -8,20 +8,6 @@ import pandas as pd
 from apyori import apriori
 import arl_utils
 
-TEXT_TO_SAVE = ''
-MESSAGE = ''
-
-addressSegment = os.path.join('Data', 'originals (uncleaned)')
-dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),#Datasets to be included in 'dfs' list for
-       pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),#processing. All of these datasets will be
-       pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),#a part of a list.
-       pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
-       pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
-       pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
-       pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
-       pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
-       pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))]
-
 def cleaner(df): #The data cleaner is specialized to clean data only from the above datasets. #The code in this method
         df.reset_index(drop=True, inplace=True)#takes out any extraneous columns, rows and data from the dataframe. It
         df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z0-9]+)')#also reformats info#using regular expressions.
@@ -37,7 +23,7 @@ def cleaner(df): #The data cleaner is specialized to clean data only from the ab
         df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z]?[0-9]+)(?! - Final Exam)')
         # df = df.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
         return df
-        
+
 def SupportFinder(df, ColumnTarget, SupportMethod): #This method generates a number for the support attribute of the
         output = []                                 #apriori algorithm.
         if SupportMethod == 'All':
@@ -97,20 +83,41 @@ def apyori_robust_rule_finder (dflist, howmany, robustness, supportColumnTarget,
         association_results.extend(list(association_rules)) #The values above define how easy it is for an association
     return association_results                              #aka a rule to be made.
 
-rules = apyori_robust_rule_finder(dfs, 8, 12, 'Room', 'Lower IQR')
 
-#TEXT_TO_SAVE += '\n'.join([str(elem) for elem in association_results]) + '\n'
+if __name__ == '__main__':
+    
+    # Variables for the file-saving
+    TEXT_TO_SAVE = ''
+    MESSAGE = ''
+    
+    # Prepare data
+    addressSegment = os.path.join('Data', 'originals (uncleaned)')
+    dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),#Datasets to be included in 'dfs' list for
+           pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),#processing. All of these datasets will be
+           pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),#a part of a list.
+           pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
+           pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
+           pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
+           pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
+           pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
+           pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))]
+    
+    # Run the pipeline and store list of rules
+    rules = apyori_robust_rule_finder(dfs, 8, 12, 'Room', 'Lower IQR')
+    
+    
+    rules = pd.DataFrame({'Rules': rules})
+    vc = rules['Rules'].value_counts()
+#    print(type(vc))
+#    print(vc)
 
-rules = pd.DataFrame({'Rules': rules})
-vc = rules['Rules'].value_counts()
-print(type(vc))
-print(vc)
+    TEXT_TO_SAVE += str(vc)
+    
+    # Add message save output to file
 
-TEXT_TO_SAVE += str(vc)
+    # ##########################################
+    # ADD YOUR CUSTOM SAVE-TO-FILE MESSAGE HERE:
+    # ##########################################
+    MESSAGE = 'Running (Robust), displaying occurence counts (refactored)'
 
-# ##########################################
-# ADD YOUR CUSTOM SAVE-TO-FILE MESSAGE HERE:
-# ##########################################
-MESSAGE += 'Running (Robust) with value counts'
-
-arl_utils.save(TEXT_TO_SAVE, MESSAGE)
+    arl_utils.save(TEXT_TO_SAVE, MESSAGE)
