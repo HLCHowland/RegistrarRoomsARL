@@ -1,4 +1,4 @@
-import os, pandas as pd
+import os, random, pandas as pd
 from Data import data_cleaning
 
 def save(text_to_save, message=''):
@@ -15,13 +15,14 @@ def save(text_to_save, message=''):
 		print('... Success')
 	# Update index cache
 	try:
+		randName = random.randint(0, 9999)
 		open(os.path.join('Runs', 'index'), 'a').write(f'{index}\n')
 		if isinstance(text_to_save, list):
 			text_to_save = '\n'.join(text_to_save)
 		elif not isinstance(text_to_save, str):
 			raise ValueError('Text to save must be either a list of lines, or a string')
 		text_to_save = message + '\n\n' + text_to_save
-		filename = f'arl_run_{index}.txt'
+		filename = f'arl_run_{randName}.txt'
 		open(os.path.join('Runs', filename), 'w').write(text_to_save)
 		print(f"Text saved to file: '{filename}' in Runs/ folder")
 	except Exception:
