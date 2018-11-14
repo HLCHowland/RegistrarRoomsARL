@@ -1,4 +1,5 @@
-import os
+import os, pandas as pd
+from Data import data_cleaning
 
 def save(text_to_save, message=''):
 	# Get file index
@@ -25,3 +26,31 @@ def save(text_to_save, message=''):
 		print(f"Text saved to file: '{filename}' in Runs/ folder")
 	except Exception:
 		raise RuntimeError('Encountered an error while saving file. Saving aborted.')
+	
+''' Generate an excel sheet with rooms found in all datasets. '''	
+def generate_all_rooms_list():
+	# Prepare the datasets
+	addressSegment = os.path.join('Data', 'originals (uncleaned)')
+	dfList = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
+		   pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))]
+	# Generate unique list of rooms
+	allRooms = set()
+	for df in dfList:
+		df = data_cleaning.perform_basic_cleaning(df)
+		for room in df.loc[:,'Room']:
+			allRooms.add(str(room))
+	# Sort alphabetically
+	allRooms = sorted(allRooms)
+	# Save list to an Excel file in Data/ folder
+	writer = pd.ExcelWriter(os.path.join('Data','all_rooms_list_maybe.xlsx'))
+	pd.DataFrame(allRooms).to_excel(writer, index=False)
+	writer.save()
+	# Inform user
+	print("List of rooms saved as an Excel file 'all_rooms_list_MAYBE.xlsx' in Data/ folder.\nWARNING: This list of rooms may not be comprehensive.\n\t Check with Prof. Hill/the registrar to obtain an official list of all available rooms.")

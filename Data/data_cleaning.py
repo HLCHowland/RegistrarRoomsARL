@@ -7,8 +7,8 @@ pd.options.mode.chained_assignment = None
 global agg_total_bef, agg_total_aft
 agg_total_bef, agg_total_aft = [], []
 
-def clean(data):
-    # Setup -- 'totals' variables to quanity impact of cleaning on the size of the data
+def perform_basic_cleaning(data):
+    # Setup -- 'totals' variables to quantify the impact of cleaning on the size of the data
     global agg_total_bef, agg_total_aft
     total_bef, total_aft = 0, 0
     total_bef = len(data)
@@ -30,9 +30,7 @@ def clean(data):
     # ...'Title & Requirements Met' (retain only the title):
     data['Title & Requirements Met'] = data['Title & Requirements Met'].str.extract(r'([^\n]+)')
     data.rename({'Title & Requirements Met':'Title'}, axis=1, inplace=True)
-    # 4: Drop irrelevant columns
-    data.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
-    # 5: Strip whitespace for better one-hot encoding
+    # 4: Strip leading and trailing whitespace off all values
     data = data.apply(lambda val: val.str.strip())
     
     # Shutdown -- Calculate and print total rows dropped, return data
@@ -42,6 +40,10 @@ def clean(data):
 #    print(f'For this dataset:  {total_aft} out of {total_bef} ({.2total_aft}%) of dataset retained.')
     
     return data
+    
+def perform_further_cleaning(data):
+    # Drop irrelevant columns
+    data.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
 
 def writeToExcel(df, filename):
     writer = pd.ExcelWriter(filename)
@@ -54,7 +56,7 @@ if __name__=='__main__':
         # Read in data
         data = pd.read_csv(os.path.join(path, filename))
         # Clean
-        data = clean(data)
+        data = perform_basic_cleaning(data)
         # Write to file
         writeToExcel(data, filename[:-4]+'_clean.xlsx')
     
