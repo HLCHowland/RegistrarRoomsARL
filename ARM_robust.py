@@ -1,12 +1,13 @@
-#Henry Howland, Karan Erry
-#eForest Scheduling Associative Rule Mining Module
-#This moduleof the eForest Scheduling project takes data sets from previous semesters and seeks to mine rules from them
-#that can be used to help generate semesterly class schedules.
+#    (c) 2018  Karan Erry, Henry Howland
+# eForest Scheduling Associative Rule Mining Module
+# This module of the eForest Scheduling project takes data sets from previous semesters and seeks to mine rules from them
+# that can be used to help generate semesterly class schedules.
 
-import random, os, sys, arl_utils
-import pandas as pd
+import random, os, sys, arl_utils, time, pandas as pd
 from apyori import apriori
 from Data import data_cleaning
+
+global allDFs
 
 ''' The data cleaner is specialized to clean data only from the above datasets.
     The code in this method takes out any extraneous columns, rows and data
@@ -30,46 +31,53 @@ def clean(df):
 #        print('cleaned', len(df))
         return df
 
+
 ''' This method generates a number for the support attribute of the apriori algorithm. '''
-def support_finder(df, ColumnTarget, SupportMethod):
-        output = []
-        if SupportMethod == 'All':
-                histoMaker = (df[ColumnTarget].value_counts())
-                supportVals = histoMaker / len(df)
-                output.append(supportVals[int(len(supportVals) * .75)]) # The decimals correspond to the index of the
-                                                                        # various IQR values of the frequency of like
-                                                                        # elements within the dataset, .75 being the
-                                                                        # upper limit of the inter quartile range,
-                                                                        # .25 the lower, and .5 being the median frequency.
-                output.append(supportVals[int(len(supportVals) * .5)])
-                output.append(supportVals[int(len(supportVals) * .25)])
-        elif SupportMethod == 'Upper IQR':
-                histoMaker = (df[ColumnTarget].value_counts())
-                supportVals = histoMaker / len(df)
-                output.append(len(supportVals)[int(len(supportVals) * 0.75)])
-        elif SupportMethod == 'Median':
-                histoMaker = (df[ColumnTarget].value_counts())
-                supportVals = histoMaker / len(df)
-                output.append(supportVals[int(len(supportVals) * 0.5)])
-        elif SupportMethod == 'Lower IQR':
-                histoMaker = (df[ColumnTarget].value_counts())
-                supportVals = histoMaker / len(df)
-                output.append(supportVals[int(len(supportVals) * 0.25)])
-        else:
-                print("Invalid support_finder(SupportMethod), mining aborted.")
-                sys.exit()
-                return 0
-        return output
+def calculate_viable_support (df, ColumnTarget, SupportMethod):
+    output = []
+    if SupportMethod == 'All':
+            histoMaker = (df[ColumnTarget].value_counts())
+            supportVals = histoMaker / len(df)
+            output.append(supportVals[int(len(supportVals) * .75)]) # The decimals correspond to the index of the
+                                                                    # various IQR values of the frequency of like
+                                                                    # elements within the dataset, .75 being the
+                                                                    # upper limit of the inter quartile range,
+                                                                    # .25 the lower, and .5 being the median frequency.
+            output.append(supportVals[int(len(supportVals) * .5)])
+            output.append(supportVals[int(len(supportVals) * .25)])
+    elif SupportMethod == 'Upper IQR':
+            histoMaker = (df[ColumnTarget].value_counts())
+            supportVals = histoMaker / len(df)
+            output.append(len(supportVals)[int(len(supportVals) * 0.75)])
+    elif SupportMethod == 'Median':
+            histoMaker = (df[ColumnTarget].value_counts())
+            supportVals = histoMaker / len(df)
+            output.append(supportVals[int(len(supportVals) * 0.5)])
+    elif SupportMethod == 'Lower IQR':
+            histoMaker = (df[ColumnTarget].value_counts())
+            supportVals = histoMaker / len(df)
+            output.append(supportVals[int(len(supportVals) * 0.25)])
+    else:
+            print("Invalid calculate_viable_support (SupportMethod), mining aborted.")
+            sys.exit()
+            return 0
+    return output
+
 
 ''' This method concatenates dataframes from the dfs list to get a more robust dataframe
     for rule mining. You can determine how many you want to concatenate and it will do
     so by choosing n random #s within the range of the dfs list. '''
-def dataframe_appender(dfList, howMany):
-        dataframes = len(dfList) -1
+def concat_multiple_DFs(howMany):
+    if howMany == 0:
+        # append all together
+        return pd.concat(allDFs, axis=0, ignore_index=True)
+    else:
+        # append only some together
+        dataframes = len(allDFs) -1
         MiningSet = pd.DataFrame()
 
         if howMany > dataframes:    # This exits the method if the # of dataframes you would like to concatinate is invalid
-                print("Invalid dataframe_appender(howMany), mining aborted.")
+                print("Invalid concat_multiple_DFs(howMany), mining aborted.")
                 sys.exit()
                 return 0
         else:
@@ -81,26 +89,154 @@ def dataframe_appender(dfList, howMany):
                 for i in range (0, howMany):    # Loop that concatenates the randomly selected dataframes from their list.
                         if MiningSet.empty:
                                 ambiguousName = randomdfindexes[i]
-                                MiningSet = dfList[ambiguousName]
+                                MiningSet = allDFs[ambiguousName]
                         else:
                                  randomdf = randomdfindexes[i]
-                                 MiningSet = pd.concat([dfList[randomdf], MiningSet], 0, ignore_index=True)
+                                 MiningSet = pd.concat([allDFs[randomdf], MiningSet], 0, ignore_index=True)
         return MiningSet
+        
+        
+def drop_duplicate_rules(rulesDf):
+    # Drop duplicates (classified by duplication in the rule-antecedent column)
+    # Method: Sort rule-antecdent duplicates by descending order of itemset-support, then drop the dupes
+    rulesDf.sort_values(by=['Rule Antecedent', 'Itemset Support'], ascending=False, inplace=True)
+    rulesDf.drop_duplicates(subset='Rule Antecedent', inplace=True)
+    rulesDf.reset_index(drop=True, inplace=True)
+    return rulesDf
+        
 
-def apyori_robust_rule_finder (dfList, howMany, robustness, supportColumnTarget, supportMethod ):
+''' This function filters rules to retain only those having a Room as the consequent.
+    IMPORTANT: Using the 'all_rooms_list_maybe.xlsx' file in Data/ folder as the
+               makeshift list of all rooms. 
+               Check with Hill/Registrar for official list of all available rooms.
+'''
+def filter_apyori_results(rules):
+    allRooms = pd.read_excel(os.path.join('Data', 'all_rooms_list_maybe.xlsx')).iloc[:,0].values
+    filteredRules = []
+    for relationRecord in rules:
+        for orderedStats in relationRecord[2]:
+            if list(orderedStats[1])[0] in allRooms:    # the rule consequent is orderedStats[1], and
+                                                        # it will always only have one element -- hence
+                                                        # the [0] access.
+                filteredRules.append(relationRecord[0:2] + orderedStats[:])
+    filteredRulesDf = pd.DataFrame(filteredRules, columns=['Itemset', 'Itemset Support', 'Rule Antecedent', 'Rule Consequent', 'Rule Confidence', 'Rule Lift'])
+    filteredRulesDf = drop_duplicate_rules(filteredRulesDf)
+    return filteredRulesDf
+    
+
+def run_non_robust_pipeline (howMany, supportColumnTarget, supportMethod):
+    # 1 Concatenate desired number of DFs into one aggregate DF
+    data = concat_multiple_DFs(howMany)
+    # 2 Calculate viable minimum support by desired method
+    vmSupport = calculate_viable_support(data, supportColumnTarget, supportMethod)
+    # 3 Convert data to list of lists as required by the apyori algorithm
+    data = data.applymap(lambda elem: str(elem)).values.tolist()
+    # 4 Run the apriori algorithm, with chosen minimum values, storing results in 'rules'
+    rules = apriori(data, min_support=vmSupport[0], min_confidence=0.2, min_lift=3, min_length=2)
+    # 5 Filter and and clean the rules
+    filtered_rules = filter_apyori_results(rules)
+    # return
+    return filtered_rules
+
+
+def run_robust_pipeline (robustness, howMany, supportColumnTarget, supportMethod ):
     association_results = []
-    for i in range(robustness): # The robustness here dictates how many times the rule mining process will happen.
-        df = (dataframe_appender(dfList, howMany))  # This function is what appends the dataframes into a larger one that
-                                                    # is more suitable for rule mining.
-        df = clean(df)
-        support = support_finder(df, supportColumnTarget, supportMethod)    # This gets the support value for the pipeline.
-        records = []    # The 'df' is the set being prepared and cleaned, derived from 'dfList' passed in at the call.
+    for x in range(robustness): # The robustness here dictates how many times the rule mining process will happen.
+        df = (concat_multiple_DFs(howMany))  # This function is what appends the dataframes into a larger one that
+                                             # is more suitable for rule mining.
+        support = calculate_viable_support (df, supportColumnTarget, supportMethod)    # This gets the support value for the pipeline.
+#        print(support[0])
+        records = []    # The 'df' is the set being prepared, derived from 'allDFs' passed in at the call.
         for i in range(0, len(df)): # This line and the line below set up a dataframe that can be mined for rules.
             records.append([str(df.values[i, j]) for j in range(0, len(df.values[i]))])
-        association_rules = apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2)
+        association_rules = list(apriori(records, min_support=support[0], min_confidence=0.2, min_lift=3, min_length=2))
         association_results.extend(list(association_rules)) # Values above define how easy it is for an association
                                                             # aka rule to be made.
     return association_results
+
+def run_robust_with_given_support (robustness, howMany, support):
+    association_results = []
+    for x in range(robustness): # The robustness here dictates how many times the rule mining process will happen.
+        df = (concat_multiple_DFs(howMany))  # This function is what appends the dataframes into a larger one that
+                                            # is more suitable for rule mining.
+        records = []    # The 'df' is the set being prepared, derived from 'allDFs' passed in at the call.
+        for i in range(0, len(df)): # This line and the line below set up a dataframe that can be mined for rules.
+            records.append([str(df.values[i, j]) for j in range(0, len(df.values[i]))])
+        association_rules = apriori(records, min_support=support, min_confidence=0.2, min_lift=3, min_length=2)
+        association_results.extend(list(association_rules)) # Values above define how easy it is for an association
+                                                            # aka rule to be made.
+    return association_results
+    
+    
+''' This function runs the apyori algorithm NON-ROBUSTLY on ever-decreasing values for the minimum
+    support, thus over time gradually getting more and more rules. 
+'''
+def run_indefinitely():
+    JUMP = 0.0005    # as a starting point
+    data = concat_multiple_DFs(0)    # concatenate all DFs
+    data_as_list = data.applymap(lambda elem: str(elem)).values.tolist()
+    runsDir = 'Indef_Runs'
+    cachePath = os.path.join(runsDir, 'indefinite_run_cache.txt')
+    try:
+        while (True):
+            # 1 Get min support, either from past run or fresh
+            try:
+                cacheLines = open(cachePath, 'r').read().split('\n')
+                if cacheLines[-1].startswith('INIT_MIN_SUPP'):
+                    vmSupport = float(cacheLines[-1].split('\t')[1])
+                elif cacheLines[-1].startswith('SUCCESS'):
+                    lastSupport = float(cacheLines[-1].split('\t')[1])
+                    if lastSupport - JUMP < 0:
+                        JUMP /= 10
+                    vmSupport = lastSupport - JUMP
+                elif cacheLines[-1].startswith('INCOMPLETE'):
+                    vmSupport = float(cacheLines[-1].split('\t')[1])
+                allRuns = pd.read_csv(os.path.join(runsDir, 'all_runs_rules.csv'))
+            except FileNotFoundError:
+                # cache doesn't exist, no it's never been run
+                vmSupport = calculate_viable_support(data, 'Room', 'Lower IQR')[0]
+                open(cachePath, 'w').write(f'INIT_MIN_SUPP\t{vmSupport}')
+                allRuns = None\
+            # 2 Record time
+            startTime = time.time()
+            # FUTURE: Execute a run-time function as a separate process that
+            #         prints an updated run-time every n seconds that the alg runs
+            # 3 Run algorithm and filter rules
+#            rules = apriori(data_as_list, min_support=vmSupport, min_confidence=0.2, min_lift=3, min_length=2)
+            robust_rules = run_robust_with_given_support(30, 8, vmSupport)
+            thisRun_rules = filter_apyori_results(robust_rules)
+            # 4 Extend rules lists and save to files
+            if allRules is None:
+                # first successful run
+                allRules = thisRun_rules
+            else:
+                allRules = pd.concat([allRules, thisRun_rules], axis=0, ignore_index=True)
+                allRules = drop_duplicate_rules(allRules)
+            allRules.to_csv(os.path.join(runsDir, 'all_runs_rules.csv'))
+            thisRun_rules.to_csv(os.path.join(runsDir, f'supp_{vmSupport}.csv'))
+            # 5 Get run_time and record support and run_time as a successful
+            runTime = time.time() - startTime
+            open(cachePath, 'a').write(f'\nSUCCESS\t{vmSupport}\t{runTime}')
+            print(f'SUCCESSFUL RUN. Ran with {vmSupport} support over {runTime} seconds.')
+    except (KeyboardInterrupt, EOFError):
+        # manual interrupt
+        runTime = time.time() - startTime
+        open(cachePath, 'a').write(f'\nINCOMPLETE\t{vmSupport}\t{runTime}')
+        print(f'\tINCOMPLETE RUN. Ran with {vmSupport} support for {runTime} seconds.')
+    
+    
+    # 1 Get last successful run's min support
+    # 2 Record Current Time
+    # Future Improvement: If ran before, calculate time estimate from previous runs
+    # 3 Run Apyori and wrapper (time-printing) function
+    #    If KeyboardInterrupt:
+    #    4 Save Run time as an incomplete
+    #    5 Output basic info
+    # 4 Extend the list of rules with these rules
+    # 5 Record support as a successful, along with time of the run
+
+#def run_asymptotically():
+#    min_supp = open('continuous_run_cache', 'r')
 
 if __name__ == '__main__':
 
@@ -110,37 +246,27 @@ if __name__ == '__main__':
 
     # Prepare data
     addressSegment = os.path.join('Data', 'originals (uncleaned)')
-    dfs = [pd.read_csv(os.path.join(addressSegment, 'FA2014.csv')), # Datasets to be included in 'dfs' list for
-                                                                    # processing. All of these datasets will be
-                                                                    # a part of a list.
-           pd.read_csv(os.path.join(addressSegment, 'FA2015.csv')),
-           pd.read_csv(os.path.join(addressSegment, 'SP2015.csv')),
-           pd.read_csv(os.path.join(addressSegment, 'FA2016.csv')),
-           pd.read_csv(os.path.join(addressSegment, 'SP2016.csv')),
-           pd.read_csv(os.path.join(addressSegment, 'FA2017.csv')),
-           pd.read_csv(os.path.join(addressSegment, 'SP2017.csv')),
-           pd.read_csv(os.path.join(addressSegment, 'FA2018.csv')),
-           pd.read_csv(os.path.join(addressSegment, 'SP2018.csv'))]
+    # Parse all datasets into dataframes, clean once and for all, and put them in a list for easy access
+    global allDFs
+    allDFs = [clean(pd.read_csv(os.path.join(addressSegment, 'FA2014.csv'))),   # Datasets to be included in 'dfs' list for
+                                                                                # processing. All of these datasets will be
+                                                                                # a part of a list.
+              clean(pd.read_csv(os.path.join(addressSegment, 'FA2015.csv'))),
+              clean(pd.read_csv(os.path.join(addressSegment, 'SP2015.csv'))),
+              clean(pd.read_csv(os.path.join(addressSegment, 'FA2016.csv'))),
+              clean(pd.read_csv(os.path.join(addressSegment, 'SP2016.csv'))),
+              clean(pd.read_csv(os.path.join(addressSegment, 'FA2017.csv'))),
+              clean(pd.read_csv(os.path.join(addressSegment, 'SP2017.csv'))),
+              clean(pd.read_csv(os.path.join(addressSegment, 'FA2018.csv'))),
+              clean(pd.read_csv(os.path.join(addressSegment, 'SP2018.csv')))]
+        
+    # RUN INDEFINITELY
+    run_indefinitely()
 
-    # Run the pipeline and store list of rules
-    rules = apyori_robust_rule_finder(dfs, 8, 12, 'Room', 'Lower IQR')
-#    
-#    print(len(rules))
-
-    # Filter rules to retain only those having a Room as the consequent
-    # IMPORTANT: Using the 'all_rooms_list_maybe.xlsx' file in Data/ folder as the
-    #            makeshift list of all rooms. 
-    #            Check with Hill/Registrar for official list of all available rooms.
-    allRooms = pd.read_excel(os.path.join('Data', 'all_rooms_list_maybe.xlsx')).iloc[:,0].values
-    filteredRules = []
-    for relationRecord in rules:
-        for orderedStats in relationRecord[2]:
-            if list(orderedStats[1])[0] in allRooms:
-                filteredRules.append(relationRecord[0:2] + orderedStats[:])
-    filteredRulesDf = pd.DataFrame(filteredRules, columns=['Itemset', 'Itemset Support', 'Rule Antecedent', 'Rule Consequent', 'Rule Confidence', 'Rule Lift'])
-    writer = pd.ExcelWriter('filteredRules.xlsx')
-    filteredRulesDf.to_excel(writer)
-    writer.save()
+    # Run the ROBUST pipeline and save list of rules
+#    rules = run_robust_pipeline (12, 8, 'Room', 'Lower IQR')
+#    filtered_rules = filter_apyori_results(rules)
+#    filtered_rules.to_csv('filteredRules.csv')
 
 #    rules = pd.DataFrame({'Rules': rules})
 #    vc = rules['Rules'].value_counts()

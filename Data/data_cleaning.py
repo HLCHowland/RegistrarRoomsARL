@@ -36,7 +36,7 @@ def perform_basic_cleaning(data):
     # Shutdown -- Calculate and print total rows dropped, return data
     total_aft = len(data)
     agg_total_aft.append(total_aft)
-    print('For this dataset:  {:d} out of {:d} ({:.2f} %) of data was retained.'.format(total_aft, total_bef, (total_aft/total_bef) * 100))
+#    print('For this dataset:  {:d} out of {:d} ({:.2f} %) of data was retained.'.format(total_aft, total_bef, (total_aft/total_bef) * 100))
 #    print(f'For this dataset:  {total_aft} out of {total_bef} ({.2total_aft}%) of dataset retained.')
     
     return data
@@ -44,11 +44,6 @@ def perform_basic_cleaning(data):
 def perform_further_cleaning(data):
     # Drop irrelevant columns
     data.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
-
-def writeToExcel(df, filename):
-    writer = pd.ExcelWriter(filename)
-    df.to_excel(writer, 'Schedule', index=False)
-    writer.save()
 
 if __name__=='__main__':
     path = 'originals (uncleaned)'
@@ -58,7 +53,7 @@ if __name__=='__main__':
         # Clean
         data = perform_basic_cleaning(data)
         # Write to file
-        writeToExcel(data, filename[:-4]+'_clean.xlsx')
+        data.to_excel(filename[:-4]+'_clean.xlsx', sheet_name='Schedule', index=False)
     
     print(f'For all datasets:\n{sum(agg_total_bef)} - {sum(agg_total_bef)-sum(agg_total_aft)} = {sum(agg_total_aft)} ({(sum(agg_total_aft)/sum(agg_total_bef))*100}% of uncleaned)')
     
