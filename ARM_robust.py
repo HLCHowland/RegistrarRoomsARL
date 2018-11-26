@@ -13,23 +13,8 @@ global allDFs
     The code in this method takes out any extraneous columns, rows and data
     from the dataframe. It also reformats info using regular expressions. '''
 def clean(df):
-#        print('start cleaning')
         df = data_cleaning.perform_basic_cleaning(df)
-        
-#        df.reset_index(drop=True, inplace=True)
-#        df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z0-9]+)')
-#        df['Dept'] = df.Course.str.extract(r'([A-Z]+)')
-#        df = df[['Dept'] + df.columns.tolist()[:-1]]
-#        df.Course = df.Course.str.extract(r'(?:[A-Z]+)([A-Z0-9 ]+)')
-#        df = df.apply(lambda val: val.str.strip())
-#        df['Title & Requirements Met'] = df['Title & Requirements Met'].str.extract(r'([^\n]+)')
-#        df['Meeting Times'] = df['Meeting Times'].str.extract(
-#                r'(\d\d?:\d\d? +[AP]M +- +\d\d?:\d\d? +[AP]M +[MTWRF]+)')
-#        df = df.rename({'Title & Requirements Met': 'Title'})
-#        df = df[df.Course != 'Course']
-#        df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z]?[0-9]+)(?! - Final Exam)')
-#        # df = df.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
-#        print('cleaned', len(df))
+        df = data_cleaning.perform_further_cleaning(df)
         return df
 
 
