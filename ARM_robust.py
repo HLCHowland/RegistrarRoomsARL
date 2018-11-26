@@ -15,6 +15,7 @@ global allDFs
 def clean(df):
 #        print('start cleaning')
         df = data_cleaning.perform_basic_cleaning(df)
+        
 #        df.reset_index(drop=True, inplace=True)
 #        df.Room = df.Room.str.extract(r'([A-Z]+ +[A-Z0-9]+)')
 #        df['Dept'] = df.Course.str.extract(r'([A-Z]+)')
@@ -191,19 +192,19 @@ def run_indefinitely():
                     vmSupport = lastSupport - JUMP
                 elif cacheLines[-1].startswith('INCOMPLETE'):
                     vmSupport = float(cacheLines[-1].split('\t')[1])
-                allRuns = pd.read_csv(os.path.join(runsDir, 'all_runs_rules.csv'))
+                allRules = pd.read_csv(os.path.join(runsDir, 'all_runs_rules.csv'))
             except FileNotFoundError:
                 # cache doesn't exist, no it's never been run
                 vmSupport = calculate_viable_support(data, 'Room', 'Lower IQR')[0]
                 open(cachePath, 'w').write(f'INIT_MIN_SUPP\t{vmSupport}')
-                allRuns = None\
+                allRules = None
             # 2 Record time
             startTime = time.time()
             # FUTURE: Execute a run-time function as a separate process that
             #         prints an updated run-time every n seconds that the alg runs
             # 3 Run algorithm and filter rules
 #            rules = apriori(data_as_list, min_support=vmSupport, min_confidence=0.2, min_lift=3, min_length=2)
-            robust_rules = run_robust_with_given_support(30, 8, vmSupport)
+            robust_rules = run_robust_with_given_support(12, 8, vmSupport)
             thisRun_rules = filter_apyori_results(robust_rules)
             # 4 Extend rules lists and save to files
             if allRules is None:

@@ -44,6 +44,7 @@ def perform_basic_cleaning(data):
 def perform_further_cleaning(data):
     # Drop irrelevant columns
     data.drop(['Meeting Times', 'Max', 'Current', 'Avail', 'Waitlist', 'Other Attributes'], axis=1, inplace=True)
+    return data
 
 if __name__=='__main__':
     path = 'originals (uncleaned)'
@@ -52,6 +53,7 @@ if __name__=='__main__':
         data = pd.read_csv(os.path.join(path, filename))
         # Clean
         data = perform_basic_cleaning(data)
+        data = perform_further_cleaning(data)
         # Write to file
         data.to_excel(filename[:-4]+'_clean.xlsx', sheet_name='Schedule', index=False)
     

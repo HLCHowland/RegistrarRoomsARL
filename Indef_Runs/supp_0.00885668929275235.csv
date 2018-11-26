@@ -1,0 +1,55 @@
+,Itemset,Itemset Support,Rule Antecedent,Rule Consequent,Rule Confidence,Rule Lift
+0,"frozenset({'BC 117', 'ECON', '0'})",0.009124537607891493,"frozenset({'ECON', '0'})",frozenset({'BC 117'}),0.3394495412844037,11.100547499260136
+1,"frozenset({'ARTS 137', 'THEA', '0'})",0.017058096415327566,"frozenset({'THEA', '0'})",frozenset({'ARTS 137'}),0.26335877862595425,13.484636196733987
+2,"frozenset({'EAP', 'COM PRES', '18'})",0.014833127317676144,"frozenset({'EAP', '18'})",frozenset({'COM PRES'}),0.7692307692307692,51.00882723833543
+3,"frozenset({'HSC S211', '16', 'CHEM'})",0.013503560029462312,"frozenset({'16', 'CHEM'})",frozenset({'HSC S211'}),0.5555555555555555,41.14141414141414
+4,"frozenset({'MUS', 'MUS 111', '0'})",0.015782983970406905,"frozenset({'MUS', '0'})",frozenset({'MUS 111'}),0.4129032258064516,23.582008178100864
+5,"frozenset({'HSC S3A', 'PSYC', '0'})",0.017517887984209227,"frozenset({'PSYC', '0'})",frozenset({'HSC S3A'}),0.41764705882352937,18.399168797953962
+6,"frozenset({'Paris Scarano', '0', 'HSC S129'})",0.009823182711198428,"frozenset({'Paris Scarano', '0'})",frozenset({'HSC S129'}),1.0,99.3170731707317
+7,"frozenset({'SIMN DNCE', 'DANC', '0'})",0.009622501850481125,"frozenset({'DANC', '0'})",frozenset({'SIMN DNCE'}),0.8297872340425532,76.43471953578337
+8,"frozenset({'HSC S3A', 'PSYC', '0', '24'})",0.010591133004926109,"frozenset({'PSYC', '0', '24'})",frozenset({'HSC S3A'}),0.826923076923077,36.89349112426036
+9,"frozenset({'Jennifer Ostrega', '0', 'COM PRES'})",0.009641532756489494,"frozenset({'Jennifer Ostrega', '0'})",frozenset({'COM PRES'}),0.609375,40.408555327868854
+10,"frozenset({'EAP', '0', 'COM PRES'})",0.014833127317676144,"frozenset({'EAP', '0'})",frozenset({'COM PRES'}),0.2830188679245283,18.767398700896997
+11,"frozenset({'CHEM', 'HSC S211', '0'})",0.013503560029462312,"frozenset({'CHEM', '0'})",frozenset({'HSC S211'}),0.26190476190476186,19.395238095238092
+12,"frozenset({'BC 18', 'WRTG', '0'})",0.009823182711198428,"frozenset({'WRTG', '0'})",frozenset({'BC 18'}),0.35714285714285715,18.17857142857143
+13,"frozenset({'ARTS 106', '0', 'ARTH'})",0.012083847102342787,"frozenset({'0', 'ARTH'})",frozenset({'ARTS 106'}),0.7777777777777778,40.95959595959596
+14,"frozenset({'BC 103', 'SPAN'})",0.008877928483353885,frozenset({'SPAN'}),frozenset({'BC 103'}),0.21818181818181817,8.191919191919192
+15,"frozenset({'HSC S3A', '0', '24'})",0.011330049261083743,"frozenset({'0', '24'})",frozenset({'HSC S3A'}),0.3357664233576642,14.98034811903425
+16,"frozenset({'MUS 111', 'MUS'})",0.015782983970406905,frozenset({'MUS'}),frozenset({'MUS 111'}),0.4129032258064516,23.582008178100864
+17,"frozenset({'Paris Scarano', 'HSC S129'})",0.0103831891223733,frozenset({'Paris Scarano'}),frozenset({'HSC S129'}),1.0,96.30952380952381
+18,"frozenset({'SIMN DNCE', 'DANC'})",0.009622501850481125,frozenset({'DANC'}),frozenset({'SIMN DNCE'}),0.8125,74.84232954545455
+19,"frozenset({'Jennifer Ostrega', 'COM PRES'})",0.009641532756489494,frozenset({'Jennifer Ostrega'}),frozenset({'COM PRES'}),0.6000000000000001,39.786885245901644
+20,"frozenset({'EAP', 'COM PRES'})",0.014833127317676144,frozenset({'EAP'}),frozenset({'COM PRES'}),0.28169014084507044,18.679288847841146
+21,"frozenset({'HSC S211', 'CHEM'})",0.013503560029462312,frozenset({'CHEM'}),frozenset({'HSC S211'}),0.25700934579439255,19.032710280373834
+22,"frozenset({'WRTG', 'BC 18'})",0.009823182711198428,frozenset({'WRTG'}),frozenset({'BC 18'}),0.35398230088495575,18.01769911504425
+23,"frozenset({'BC 117', 'ECON'})",0.012577065351418002,frozenset({'ECON'}),frozenset({'BC 117'}),0.3669064748201439,11.998433511255511
+24,"frozenset({'ARTS 137', 'THEA'})",0.017799752781211372,frozenset({'THEA'}),frozenset({'ARTS 137'}),0.2647058823529412,13.553611317944899
+25,"frozenset({'ARTS 106', 'ARTH'})",0.012330456226880395,frozenset({'ARTH'}),frozenset({'ARTS 106'}),0.78125,41.142451298701296
+26,"frozenset({'Jennifer Ostrega', 'COM PRES', '18'})",0.009641532756489494,"frozenset({'Jennifer Ostrega', '18'})",frozenset({'COM PRES'}),0.8666666666666667,57.46994535519126
+27,"frozenset({'HSC S3A', 'PSYC', '24'})",0.011576354679802956,"frozenset({'PSYC', '24'})",frozenset({'HSC S3A'}),0.8245614035087719,36.78812415654521
+28,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'WRTG', 'BC 18'})",0.009334315892901008,"frozenset({'WRTG', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:'})",frozenset({'BC 18'}),0.33333333333333337,19.11267605633803
+29,"frozenset({'Paris Scarano', 'BIOL', 'HSC S129'})",0.0103831891223733,"frozenset({'Paris Scarano', 'BIOL'})",frozenset({'HSC S129'}),1.0,96.30952380952381
+30,"frozenset({'ARTS 106', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0', 'ARTH'})",0.009579955784819455,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0', 'ARTH'})",frozenset({'ARTS 106'}),0.8478260869565218,42.61111111111112
+31,"frozenset({'20', 'Paris Scarano', 'BIOL', 'HSC S129'})",0.00935960591133005,"frozenset({'20', 'Paris Scarano', 'BIOL'})",frozenset({'HSC S129'}),1.0,99.02439024390243
+32,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0', 'COM PRES', '18'})",0.009394313967861558,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0', '18'})",frozenset({'COM PRES'}),0.21348314606741575,14.15638239086388
+33,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'ARTS 106', 'ARTH'})",0.009825595676737903,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'ARTH'})",frozenset({'ARTS 106'}),0.851063829787234,42.77383766745469
+34,"frozenset({'20', 'Paris Scarano', 'HSC S129'})",0.00935960591133005,"frozenset({'20', 'Paris Scarano'})",frozenset({'HSC S129'}),1.0,99.02439024390243
+35,"frozenset({'20', 'BIOL', 'HSC S129'})",0.00935960591133005,"frozenset({'20', 'BIOL'})",frozenset({'HSC S129'}),0.5507246376811594,54.53517143867091
+36,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'COM PRES', '18'})",0.009394313967861558,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '18'})",frozenset({'COM PRES'}),0.2111111111111111,13.999089253187613
+37,"frozenset({'HSC S208', '0', 'PHYS'})",0.009131293188548864,"frozenset({'0', 'PHYS'})",frozenset({'HSC S208'}),0.38541666666666663,42.20833333333333
+38,"frozenset({'HSC S208', 'PHYS'})",0.009131293188548864,frozenset({'PHYS'}),frozenset({'HSC S208'}),0.38144329896907214,41.77319587628866
+39,"frozenset({'HSC S3A', 'PSYC'})",0.019491734517641253,frozenset({'PSYC'}),frozenset({'HSC S3A'}),0.434065934065934,19.122491638795985
+40,"frozenset({'EAP', '18', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0', 'COM PRES'})",0.009147095179233622,"frozenset({'EAP', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0', '18'})",frozenset({'COM PRES'}),0.7872340425531914,52.20265085455179
+41,"frozenset({'EAP', 'Jennifer Ostrega', '18', '0', 'COM PRES'})",0.009641532756489494,"frozenset({'EAP', 'Jennifer Ostrega', '0', '18'})",frozenset({'COM PRES'}),0.8666666666666667,57.46994535519126
+42,"frozenset({'EAP', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'COM PRES', '18'})",0.009147095179233622,"frozenset({'EAP', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '18'})",frozenset({'COM PRES'}),0.7872340425531914,52.20265085455179
+43,"frozenset({'EAP', 'Jennifer Ostrega', 'COM PRES', '18'})",0.009641532756489494,"frozenset({'EAP', 'Jennifer Ostrega', '18'})",frozenset({'COM PRES'}),0.8666666666666667,57.46994535519126
+44,"frozenset({'EAP', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0', 'COM PRES'})",0.009147095179233622,"frozenset({'EAP', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', '0'})",frozenset({'COM PRES'}),0.49333333333333335,32.71366120218579
+45,"frozenset({'EAP', 'Jennifer Ostrega', '0', 'COM PRES'})",0.009641532756489494,"frozenset({'EAP', 'Jennifer Ostrega', '0'})",frozenset({'COM PRES'}),0.609375,40.408555327868854
+46,"frozenset({'BIOL', 'Paris Scarano', '0', 'HSC S129'})",0.009823182711198428,"frozenset({'BIOL', 'Paris Scarano', '0'})",frozenset({'HSC S129'}),1.0,99.3170731707317
+47,"frozenset({'BC 18', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'WRTG', '0'})",0.009334315892901008,"frozenset({'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'WRTG', '0'})",frozenset({'BC 18'}),0.336283185840708,19.281814782500312
+48,"frozenset({'Jennifer Ostrega', '0', 'COM PRES', '18'})",0.009641532756489494,"frozenset({'Jennifer Ostrega', '0', '18'})",frozenset({'COM PRES'}),0.8666666666666667,57.46994535519126
+49,"frozenset({'EAP', '0', 'COM PRES', '18'})",0.014833127317676144,"frozenset({'EAP', '0', '18'})",frozenset({'COM PRES'}),0.7692307692307692,51.00882723833543
+50,"frozenset({'CHEM', 'HSC S211', '16', '0'})",0.013503560029462312,"frozenset({'CHEM', '16', '0'})",frozenset({'HSC S211'}),0.5612244897959183,41.56122448979592
+51,"frozenset({'EAP', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:', 'COM PRES'})",0.009147095179233622,"frozenset({'EAP', 'Pre-reqs: \nCo-Reqs: \nCross Listed: \nApproval Type: \nPart of Term: Full Term \nFinal Exam:'})",frozenset({'COM PRES'}),0.49333333333333335,32.71366120218579
+52,"frozenset({'EAP', 'Jennifer Ostrega', 'COM PRES'})",0.009641532756489494,"frozenset({'EAP', 'Jennifer Ostrega'})",frozenset({'COM PRES'}),0.6000000000000001,39.786885245901644
+53,"frozenset({'HSC S3A', '24'})",0.012315270935960592,frozenset({'24'}),frozenset({'HSC S3A'}),0.3333333333333333,14.87179487179487
